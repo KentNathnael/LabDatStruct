@@ -78,6 +78,7 @@ int getHash(char* id){
     }
     return (x-1)%hash_size;
 }
+
 struct booking* newBooking(char* fullname, 
 char* phone, int age, char* type, int dur){
     booking* curr = (booking*)malloc(sizeof(booking));
