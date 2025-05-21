@@ -75,7 +75,7 @@ nodes* balancing(nodes* c){
     }
     
     // right right
-    if(getBalance(c) < 1 && getBalance(c->right) < 0){
+    if(getBalance(c) < -1 && getBalance(c->right) < 0){
         return leftRotate(c);
     }
 
@@ -86,7 +86,7 @@ nodes* balancing(nodes* c){
     }
     
     // right left
-    if(getBalance(c) < 1 && getBalance(c->right) > 0){
+    if(getBalance(c) < -1 && getBalance(c->right) > 0){
         c->right = rightRotate(c->right);
         return leftRotate(c);
     }
@@ -99,11 +99,11 @@ nodes* insertAVL(nodes* c , int value){
         return createNewNode(value);
     }
     
-    if(c->value < value){
+    if(c->value > value){
         c->left = insertAVL(c->left, value);
     }
 
-    if(c->value > value){
+    if(c->value < value){
         c->right = insertAVL(c->right, value);
     }
 
@@ -117,13 +117,64 @@ nodes* deleteAVL(nodes* c, int value){
         return NULL;
     }
     
-    if(c->value < value){
+    else if(c->value < value){
         c->left = deleteAVL(c->left, value);
     }   
 
-    if(c->value > value){
+    else if(c->value > value){
         c->right = deleteAVL(c->right, value);
     }
+    else{
+        if(c->left == NULL && c->right == NULL){
+            free(c);
+            return NULL;
+        }
+        else if(c->left == NULL || c->right == NULL){
+            nodes* temp = c->left ? c->left : c->right;
+            free(c);
+            return temp;
+        }
+        else{
+            nodes* temp = c->left;
 
-    
+            while(temp->right){
+                temp = temp->right;
+            }
+
+            c->value = temp->value;
+
+            c->left = deleteAVL(c->left, temp->value);
+        }
+    }
+
+    c->height = 1 + getMax(getHeight(c->left), getHeight(c->right));
+
+    return balancing(c);
+}
+
+void inOrder(nodes* c){
+    if(c == NULL) return;
+    inOrder(c->left);
+    printf("%d ", c->value);
+    inOrder(c->right);
+}
+
+
+int main(){
+    root = insertAVL(root, 30);
+    root = insertAVL(root, 20);
+    root = insertAVL(root, 40);
+    root = insertAVL(root, 10);
+
+    printf("Inorder traversal: ");
+    inOrder(root);
+    printf("\n");
+
+    root = deleteAVL(root, 20);
+
+    printf("After deletion: ");
+    inOrder(root);
+    printf("\n");
+
+    return 0;
 }
